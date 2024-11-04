@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: /db/changelog/changes/create-todos-table.sql
+  - include:
+      file: /db/changelog/changes/create-task_history-table.sql

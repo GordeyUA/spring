@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+/checkstyle.xml
+/src/main/resources/hibernate.cfg.xml
+/src/main/resources/liquibase.properties
+/src/main/resources/META-INF/persistence.xml

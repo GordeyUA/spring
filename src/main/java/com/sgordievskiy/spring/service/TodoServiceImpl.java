@@ -8,10 +8,9 @@ import com.sgordievskiy.spring.model.TaskHistory;
 import com.sgordievskiy.spring.model.Todo;
 import com.sgordievskiy.spring.repository.TaskHistoryRepository;
 import com.sgordievskiy.spring.repository.TodoRepository;
-
 import java.time.LocalDateTime;
 import java.util.List;
-
+import java.util.NoSuchElementException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,18 +41,29 @@ public class TodoServiceImpl implements TodoService {
   }
 
   @Override
+  public void delete(Long id) {
+    Todo todo = todoRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Task not found."));
+    todoRepository.delete(todo);
+  }
+
+  @Override
   @Transactional
   public TodoResponseDto update(TodoUpdateDto todo) {
-    Todo todoOld = todoRepository.findById(todo.getId()).orElseThrow();
-    String oldTodo = todoOld.toString();
+    Todo todoOld = todoRepository.findById(todo.getId()).orElseThrow(() -> new NoSuchElementException("Task not found."));
+    String oldTodo = todoOld.getInfo();
+    if (todo.getPriority() == null) {
+      todo.setPriority(todoOld.getPriority());
+    }
     Todo todoNew = todoRepository.save(todoMapper.toEntity(todo));
-    String newTodo = todoNew.toString();
+    String newTodo = todoNew.getInfo();
+
     TaskHistory taskHistory = new TaskHistory();
     taskHistory.setTodo(todoNew);
     taskHistory.setOldState(oldTodo);
     taskHistory.setNewState(newTodo);
     taskHistory.setChangeDate(LocalDateTime.now());
     taskHistoryRepository.save(taskHistory);
+
     return todoMapper.toDto(todoNew);
   }
 }

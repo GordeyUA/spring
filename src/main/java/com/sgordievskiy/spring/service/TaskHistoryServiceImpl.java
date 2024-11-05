@@ -2,8 +2,7 @@ package com.sgordievskiy.spring.service;
 
 import com.sgordievskiy.spring.dto.TaskHistoryResponseDto;
 import java.util.List;
-import java.util.Optional;
-
+import java.util.NoSuchElementException;
 import com.sgordievskiy.spring.mapper.TaskHistoryMapper;
 import com.sgordievskiy.spring.model.Todo;
 import com.sgordievskiy.spring.repository.TaskHistoryRepository;
@@ -21,8 +20,8 @@ public class TaskHistoryServiceImpl implements TaskHistoryService {
 
   @Override
   public List<TaskHistoryResponseDto> getAllByTaskId(Long taskId) {
-    Optional<Todo> todo = todoRepository.findById(taskId);
-    return taskHistoryRepository.findAllByTodo(todo.orElseThrow()).stream()
+    Todo todo = todoRepository.findById(taskId).orElseThrow(() -> new NoSuchElementException("Task not found."));
+    return taskHistoryRepository.findAllByTodo(todo).stream()
       .map(taskHistoryMapper::toDto)
       .toList();
   }

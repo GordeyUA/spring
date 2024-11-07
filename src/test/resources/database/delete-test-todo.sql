@@ -1,0 +1,1 @@
+delete from todos where title="Title";
